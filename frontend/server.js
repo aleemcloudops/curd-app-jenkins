@@ -4,11 +4,11 @@ const axios = require('axios');
 const app = express();
 const PORT = 3000;
 
+// Use Docker internal hostname instead of localhost
+const API = 'http://backend:5000';
+
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json());
-
-// API proxy to backend
-const API = 'http://localhost:5000';
 
 app.get('/api/notes', async (req, res) => {
   const response = await axios.get(`${API}/notes`);

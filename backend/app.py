@@ -8,7 +8,7 @@ CORS(app)
 
 DATA_FILE = 'data.json'
 
-# Load data or initialize
+# Initialize data file if it doesn't exist
 if not os.path.exists(DATA_FILE):
     with open(DATA_FILE, 'w') as f:
         json.dump([], f)
@@ -51,5 +51,10 @@ def delete_note(note_id):
     write_data(data)
     return jsonify({'message': 'Deleted'}), 200
 
+# Optional health check route
+@app.route('/ping', methods=['GET'])
+def ping():
+    return jsonify({'message': 'pong'}), 200
+
 if __name__ == '__main__':
-    app.run(port=5000)
+    app.run(host='0.0.0.0', port=5000)
