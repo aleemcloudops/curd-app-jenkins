@@ -64,6 +64,6 @@ def delete_note(note_id):
     write_data(updated_data)
     return jsonify({'message': 'Deleted'}), 200
 
-# 🏁 Run server on 0.0.0.0 so it's reachable from other Docker containers
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
