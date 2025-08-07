@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        COMPOSE_PROJECT_NAME = "curdapp"
+        DOCKER_COMPOSE = 'docker compose'
     }
 
     stages {
@@ -14,34 +14,42 @@ pipeline {
 
         stage('Build Docker Images') {
             steps {
-                sh 'docker compose build'
+                sh "${DOCKER_COMPOSE} build"
+            }
+        }
+
+        stage('Clean Old Containers') {
+            steps {
+                sh '''
+                    docker rm -f backend || true
+                    docker rm -f frontend || true
+                '''
             }
         }
 
         stage('Start Containers') {
             steps {
-                sh 'docker compose up -d'
+                sh "${DOCKER_COMPOSE} up -d"
             }
         }
 
         stage('Test App Health') {
             steps {
-                sh 'curl -f http://localhost:5000/ping || echo "Backend not responding"'
-                sh 'curl -f http://localhost:3000 || echo "Frontend not responding"'
+                sh 'curl -f http://localhost:5000/notes || exit 1'
             }
         }
 
         stage('Stop Containers') {
             steps {
-                sh 'docker compose down'
+                sh "${DOCKER_COMPOSE} down --volumes --remove-orphans"
             }
         }
     }
 
     post {
         always {
-            echo "Cleaning up..."
-            sh 'docker compose down --volumes --remove-orphans || true'
+            echo 'Cleaning up...'
+            sh "${DOCKER_COMPOSE} down --volumes --remove-orphans || true"
         }
     }
 }
